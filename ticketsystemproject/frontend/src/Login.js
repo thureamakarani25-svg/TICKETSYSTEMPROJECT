@@ -8,6 +8,29 @@ function Login({ onLoginSuccess, onNavigate }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const getApiErrorMessage = (err) => {
+    const data = err.response?.data;
+
+    if (!data) {
+      return 'Cannot reach backend API. Start Django server on http://localhost:8000';
+    }
+    if (typeof data === 'string') {
+      return data;
+    }
+    if (data.error) {
+      return data.error;
+    }
+    const firstKey = Object.keys(data)[0];
+    const firstValue = data[firstKey];
+    if (Array.isArray(firstValue)) {
+      return firstValue[0];
+    }
+    if (typeof firstValue === 'string') {
+      return firstValue;
+    }
+    return 'Login failed';
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -20,7 +43,7 @@ function Login({ onLoginSuccess, onNavigate }) {
       localStorage.setItem('is_staff', response.data.is_staff);
       onLoginSuccess(response.data);
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }

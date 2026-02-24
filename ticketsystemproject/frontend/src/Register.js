@@ -11,6 +11,29 @@ function Register({ onNavigate }) {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const getApiErrorMessage = (err) => {
+    const data = err.response?.data;
+
+    if (!data) {
+      return 'Cannot reach backend API. Start Django server on http://localhost:8000';
+    }
+    if (typeof data === 'string') {
+      return data;
+    }
+    if (data.error) {
+      return data.error;
+    }
+    const firstKey = Object.keys(data)[0];
+    const firstValue = data[firstKey];
+    if (Array.isArray(firstValue)) {
+      return firstValue[0];
+    }
+    if (typeof firstValue === 'string') {
+      return firstValue;
+    }
+    return 'Registration failed';
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -27,7 +50,7 @@ function Register({ onNavigate }) {
         onNavigate('login');
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.password?.[0] || 'Registration failed');
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }
