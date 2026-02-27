@@ -315,3 +315,36 @@ If you're running on a different port, update `CORS_ALLOWED_ORIGINS` in `tickets
 - Ticket cancellation policies
 - Review and rating system
 - Mobile app version
+"# TICKET" 
+
+## Deployment (Render Backend + Vercel Frontend)
+
+### 1. Backend on Render
+
+This repository now includes:
+- `requirements.txt`
+- `build.sh`
+- `render.yaml`
+
+Steps:
+1. Push this project to GitHub.
+2. In Render, create Blueprint deployment from your repo (it will use `render.yaml`).
+3. After first deploy, update `CORS_ALLOWED_ORIGINS` env var in Render with your real Vercel URL.
+4. Confirm backend is live at: `https://ticketsystem-backend.onrender.com/api/`
+
+### 2. Frontend on Vercel
+
+This repository now includes:
+- `frontend/vercel.json`
+
+Steps:
+1. Import the same GitHub repo into Vercel.
+2. Set project root to `frontend`.
+3. Add Environment Variable in Vercel:
+   - `REACT_APP_API_BASE_URL=https://ticketsystem-backend.onrender.com/api`
+4. Deploy.
+
+### 3. Required post-deploy update
+
+After Vercel deploy, copy your actual Vercel domain and set Render env:
+- `CORS_ALLOWED_ORIGINS=https://your-real-app.vercel.app`
